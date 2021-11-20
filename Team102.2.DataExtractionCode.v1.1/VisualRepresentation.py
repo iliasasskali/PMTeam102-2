@@ -17,6 +17,19 @@ def load_data():
 
     return df_poblacio, df_demografia, df_lloguer, df_edat_sexe, df_demografia_habitatges
 
+def plot_cities_data(cities, data):
+    for d in data:
+        if d in df_poblacio.columns:    #Comprobar en que hoja esta la info
+            st.bar_chart(df_poblacio[d][cities])
+        elif d in df_demografia.columns:
+            st.bar_chart(df_demografia[d][cities])
+        elif d in df_lloguer.columns:
+            st.bar_chart(df_lloguer[d][cities])
+        elif d in df_edat_sexe.columns:
+            st.bar_chart(df_edat_sexe[d][cities])
+        elif d in df_demografia_habitatges.columns:
+            st.bar_chart(df_demografia_habitatges[d][cities])
+
 st.title('Dades Tarragonès')
 st.write("Dades dels municipis del Tarragonès, utilitza el menú lateral per generar gràfiques i comparar dades de diferents municipis.")
 df_poblacio, df_demografia, df_lloguer, df_edat_sexe, df_demografia_habitatges = load_data()
@@ -27,6 +40,8 @@ multiselect = st.sidebar.multiselect(
     df_poblacio.index
 )
 st.sidebar.subheader('\nEscull les dades per visualitzar')
+
+
 
 st.sidebar.write('LLoguer:')
 preu_lloguer = st.sidebar.checkbox('Preu lloguer ultima decada')
@@ -81,24 +96,28 @@ llars_pare_mare_fills = st.sidebar.checkbox("Llars per tipus de nucli - Pare o M
 hab_fam_prin_prop = st.sidebar.checkbox("Habitatges familiars principals de propietat")
 habitants_habitatge = st.sidebar.checkbox("Habitants per habitatge")
 
-st.subheader('Dades Població')
-st.write(df_poblacio)
+if len(multiselect) > 0:
+    plot_cities_data(multiselect, ['Població Activa', "Tasa població activa"])
 
-st.subheader('Dades Demogràfiques')
-st.write(df_demografia)
+else:
+    st.subheader('Dades Població')
+    st.write(df_poblacio)
 
-st.subheader('Preu lloguer última dècada')
-st.write(df_lloguer)
+    st.subheader('Dades Demogràfiques')
+    st.write(df_demografia)
 
-st.subheader('Dades Edat-Genere')
-st.write(df_edat_sexe)
+    st.subheader('Preu lloguer última dècada')
+    st.write(df_lloguer)
 
-st.subheader('Dades Demografia-Habitatges')
-st.write(df_demografia_habitatges)
+    st.subheader('Dades Edat-Genere')
+    st.write(df_edat_sexe)
+
+    st.subheader('Dades Demografia-Habitatges')
+    st.write(df_demografia_habitatges)
 
 
-#st.bar_chart(df_lloguer["renda"])
+    #st.bar_chart(df_lloguer["renda"])
 
-#if st.checkbox('Show Age Gender Data'):
-#    st.subheader('Age Gender Data')
-#    st.write(df_edat_sexe)
+    #if st.checkbox('Show Age Gender Data'):
+    #    st.subheader('Age Gender Data')
+    #    st.write(df_edat_sexe)
