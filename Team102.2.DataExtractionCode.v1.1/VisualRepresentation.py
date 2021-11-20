@@ -2,7 +2,9 @@ import streamlit as st
 import pandas as pd
 import json 
 
+# cd Team102...
 # python3 -m pipenv shell  
+# python3 -m pip install openpyxl 
 # python3 -m pip install streamlit   
 # streamlit run VisualRepresentation.py                                                                 
 
@@ -15,7 +17,7 @@ def load_data():
     df_lloguer = pd.read_excel(xls, 'Lloguer-Decada',  index_col=1)
     df_edat_sexe = pd.read_excel(xls, 'Poblacio-Edat-Sexe', index_col=2)
     df_demografia_habitatges = pd.read_excel(xls, 'Demografia-Habitatges', index_col=0, header=0)
-    with open("checkbox_column.json", "r") as json_file:
+    with open("checkbox_column.json", "r", encoding="utf8") as json_file:
         checkbox_column = json.load(json_file)
 
     return df_poblacio, df_demografia, df_lloguer, df_edat_sexe, df_demografia_habitatges, checkbox_column
@@ -102,14 +104,36 @@ checklist["hab_fam_prin_prop"] = st.sidebar.checkbox("Habitatges familiars princ
 checklist["habitants_habitatge"] = st.sidebar.checkbox("Habitants per habitatge")
 
 columns = [checkbox_column[k] for k, v in checklist.items() if v]
-# TODO: Borrar aixo quan no es necessiti
-st.write(cities)
-st.write(columns)
 
 if len(cities) > 0 and len(columns) > 0:
     plot_cities_data(cities, columns)
 elif len(cities) > 0:
     print("Show tables with city info")
+elif len(columns) > 0:
+    columnsPoblacio = [column for column in columns if column in df_poblacio.columns]
+    if len(columnsPoblacio) > 0:
+        st.subheader('Dades Població')
+        st.write(df_poblacio[columnsPoblacio])
+
+    columnsDemografia = [column for column in columns if column in df_demografia.columns]
+    if len(columnsDemografia) > 0:
+        st.subheader('Dades Demogràfiques')
+        st.write(df_demografia[columnsDemografia])
+
+    columnsLloguer = [column for column in columns if column in df_lloguer.columns]
+    if len(columnsLloguer) > 0:
+        st.subheader('Preu lloguer última dècada')
+        st.write(df_lloguer[columnsLloguer])
+
+    columnsEdatSexe = [column for column in columns if column in df_edat_sexe.columns]
+    if len(columnsEdatSexe) > 0:
+        st.subheader('Dades Edat-Genere')
+        st.write(df_edat_sexe[columnsEdatSexe])
+
+    columnsDemografiaHabitatges = [column for column in columns if column in df_demografia_habitatges.columns]
+    if len(columnsDemografiaHabitatges) > 0:  
+        st.subheader('Dades Demografia-Habitatges')
+        st.write(df_demografia_habitatges[columnsDemografiaHabitatges])
 else:
     st.subheader('Dades Població')
     st.write(df_poblacio)
