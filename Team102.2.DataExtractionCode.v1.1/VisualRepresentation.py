@@ -1,3 +1,4 @@
+from numpy import int64, isnan, nan
 import streamlit as st
 import pandas as pd
 import json 
@@ -16,8 +17,8 @@ def load_data():
     df_demografia = pd.read_excel(xls, 'Demografia', index_col=0)
     df_lloguer = pd.read_excel(xls, 'Lloguer-Decada',  index_col=1)
     df_edat_sexe = pd.read_excel(xls, 'Poblacio-Edat-Sexe', index_col=2)
-    df_demografia_habitatges = pd.read_excel(xls, 'Demografia-Habitatges', index_col=0, header=0)
-    with open("checkbox_column.json", "r", encoding="utf8") as json_file:
+    df_demografia_habitatges = pd.read_excel(xls, 'Demografia-Habitatges', index_col=0, header=0)#.fillna(0).astype(int64)   #CAMBIO AQUI DE NAN A 0
+    with open("checkbox_column.json", "r", encoding ="utf8") as json_file:
         checkbox_column = json.load(json_file)
 
     return df_poblacio, df_demografia, df_lloguer, df_edat_sexe, df_demografia_habitatges, checkbox_column
@@ -30,12 +31,19 @@ def plot_cities_data(cities, data):
             st.bar_chart(df_poblacio[d][cities])
         elif d in df_demografia.columns:
             st.bar_chart(df_demografia[d][cities])
-        elif d in df_lloguer.columns:
-            st.bar_chart(df_lloguer[d][cities])
+        elif d in df_lloguer.columns:   #Va por año este
+            df_temp_cities = []
+            for city in cities:
+                data = {city:list(df_lloguer[d][city])}  
+                df_temp = pd.DataFrame(data, index =df_lloguer["any"][city])
+                df_temp_cities.append(df_temp.copy())
+            final_df = pd.concat(df_temp_cities, axis=1)
+            st.line_chart(final_df)
         elif d in df_edat_sexe.columns:
             st.bar_chart(df_edat_sexe[d][cities])
-        elif d in df_demografia_habitatges.columns:
-            st.bar_chart(df_demografia_habitatges[d][cities])
+        elif d in df_demografia_habitatges.columns: #Comprobar celdas con nan
+            if not isnan(df_demografia_habitatges[d][cities].values).all():
+                st.bar_chart(df_demografia_habitatges[d][cities])
 
 st.title('Dades Tarragonès')
 st.write("Dades dels municipis del Tarragonès, utilitza el menú lateral per generar gràfiques i comparar dades de diferents municipis.")
