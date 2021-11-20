@@ -45,6 +45,7 @@ cities = st.sidebar.multiselect(
 )
 st.sidebar.subheader('\nEscull les dades per visualitzar')
 
+checklist = {}
 st.sidebar.write('LLoguer:')
 checklist["preu_lloguer"] = st.sidebar.checkbox('Preu lloguer ultima decada')
 
@@ -100,13 +101,15 @@ checklist["llars_pare_mare_fills"] = st.sidebar.checkbox("Llars per tipus de nuc
 checklist["hab_fam_prin_prop"] = st.sidebar.checkbox("Habitatges familiars principals de propietat")
 checklist["habitants_habitatge"] = st.sidebar.checkbox("Habitants per habitatge")
 
-if len(multiselect) > 0:
-    plot_cities_data(multiselect, ['Població Activa', "Tasa població activa"])
-st.subheader(checklist)
+columns = [checkbox_column[k] for k, v in checklist.items() if v]
+# TODO: Borrar aixo quan no es necessiti
+st.write(cities)
+st.write(columns)
 
-st.subheader('Dades Població')
-st.write(df_poblacio)
-
+if len(cities) > 0 and len(columns) > 0:
+    plot_cities_data(cities, columns)
+elif len(cities) > 0:
+    print("Show tables with city info")
 else:
     st.subheader('Dades Població')
     st.write(df_poblacio)
@@ -120,11 +123,5 @@ else:
     st.subheader('Dades Edat-Genere')
     st.write(df_edat_sexe)
 
-columns = [checkbox_column[k] for k, v in checklist.items() if v]
     st.subheader('Dades Demografia-Habitatges')
     st.write(df_demografia_habitatges)
-
-
-#if st.checkbox('Show Age Gender Data'):
-#    st.subheader('Age Gender Data')
-#    st.write(df_edat_sexe)
