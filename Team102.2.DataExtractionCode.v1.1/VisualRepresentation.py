@@ -9,6 +9,12 @@ import json
 # python3 -m pip install streamlit   
 # streamlit run VisualRepresentation.py                                                                 
 
+col1, col2 = st.columns(2)
+with col1:
+    st.image('https://incasolsolars.cat/wp-content/uploads/2020/04/cropped-logo_incasol_transp_neg-1.png', width=256)
+with col2:
+    st.image('https://www.upf.edu/documents/7283915/220614254/UPFt_rgb.png/99b73f76-6b25-8b0d-f297-cdeb13c64962?t=1547110100870', width=256)
+
 @st.cache
 def load_data():
     # Fetching data from excel file
