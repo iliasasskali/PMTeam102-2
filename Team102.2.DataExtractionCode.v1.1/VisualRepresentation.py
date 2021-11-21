@@ -101,11 +101,11 @@ checklist["t15_64"] = st.sidebar.checkbox("Total de 15 a 64 anys")
 checklist["t65_m"] = st.sidebar.checkbox("Total de 65 anys i més")
 
 st.sidebar.write('Demografia i habitatges:')
-checklist["pob_cat"] = st.sidebar.checkbox("Població per lloc de neixament - Catalunya")
-checklist["pob_esp"] = st.sidebar.checkbox("Població per lloc de neixament - Resta d'Espanya")
-checklist["pob_est"] = st.sidebar.checkbox("Població per lloc de neixament - Estranger")
-checklist["pob_nac_esp"] = st.sidebar.checkbox("Població per nacionalitat - Espanyola")
-checklist["pob_nac_est"] = st.sidebar.checkbox("Població per nacionalitat - Estrangera")
+checklist["pob_cat"] = st.sidebar.checkbox("Població per lloc de neixament: \nCatalunya")
+checklist["pob_esp"] = st.sidebar.checkbox("Població per lloc de neixament: \nResta d'Espanya")
+checklist["pob_est"] = st.sidebar.checkbox("Població per lloc de neixament: \nEstranger")
+checklist["pob_nac_esp"] = st.sidebar.checkbox("Població per nacionalitat: \nEspanyola")
+checklist["pob_nac_est"] = st.sidebar.checkbox("Població per nacionalitat: \nEstrangera")
 checklist["mob_est_no_uni"] = st.sidebar.checkbox("Movilitat obliga per estudis no universitaris (Curs 2019/20)")
 checklist["mob_est_no_uni_perc"] = st.sidebar.checkbox("Movilitat obliga per estudis no universitaris (Curs 2019/20) - Alumnes residents que estudien al mateix municipi")
 checklist["hab_fam_tot"] = st.sidebar.checkbox("Habitatges familiars totals")
@@ -130,20 +130,30 @@ columns = [checkbox_column[k] for k, v in checklist.items() if v]
 if len(cities) > 0 and len(columns) > 0:
     plot_cities_data(cities, columns)
 elif len(cities) > 0:
-    st.subheader('Dades Població')
-    st.write(df_poblacio.loc[cities])
+    citiesPoblacio = [city for city in cities if city in df_poblacio.index]
+    if len(citiesPoblacio) > 0:
+        st.subheader('Dades Població')
+        st.write(df_poblacio.loc[cities])
 
-    st.subheader('Dades Demogràfiques')
-    st.write(df_demografia.loc[cities])
+    citiesDemografia = [city for city in cities if city in df_demografia.index]
+    if len(citiesDemografia) > 0:
+        st.subheader('Dades Demogràfiques')
+        st.write(df_demografia.loc[cities])
 
-    st.subheader('Preu lloguer última dècada')
-    st.write(df_lloguer.loc[cities])
+    citiesLloguer = [city for city in cities if city in df_lloguer.index]
+    if len(citiesLloguer) > 0:
+        st.subheader('Preu lloguer última dècada')
+        st.write(df_lloguer.loc[cities])
 
-    st.subheader('Dades Edat-Genere')
-    st.write(df_edat_sexe.loc[cities])
+    citiesEdatSexe = [city for city in cities if city in df_edat_sexe.index]
+    if len(citiesEdatSexe) > 0:
+        st.subheader('Dades Edat-Genere')
+        st.write(df_edat_sexe.loc[cities])
 
-    st.subheader('Dades Demografia-Habitatges')
-    st.write(df_demografia_habitatges.loc[cities])
+    citiesDemografiaHabitatges = [city for city in cities if city in df_demografia_habitatges.index]
+    if len(citiesDemografiaHabitatges) > 0:
+        st.subheader('Dades Demografia-Habitatges')
+        st.write(df_demografia_habitatges.loc[cities])
 elif len(columns) > 0:
     columnsPoblacio = [column for column in columns if column in df_poblacio.columns]
     if len(columnsPoblacio) > 0:
