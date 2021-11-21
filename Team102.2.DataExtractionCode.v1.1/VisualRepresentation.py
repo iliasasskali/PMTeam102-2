@@ -1,7 +1,9 @@
 from numpy import int64, isnan, nan
 import streamlit as st
 import pandas as pd
-import json 
+import json
+
+from streamlit.config import _check_conflicts 
 
 # cd Team102...
 # python3 -m pipenv shell  
@@ -33,22 +35,28 @@ df_poblacio, df_demografia, df_lloguer, df_edat_sexe, df_demografia_habitatges, 
 
 def plot_cities_data(cities, data):
     for d in data:
-        if d in df_poblacio.columns:    #Comprobar en que hoja esta la info
+        if d in df_poblacio.columns:    # Comprobar en que hoja esta la info
+            st.subheader(d)
             st.bar_chart(df_poblacio[d][cities])
         elif d in df_demografia.columns:
+            st.subheader(d)
             st.bar_chart(df_demografia[d][cities])
-        elif d in df_lloguer.columns:   #Va por año este
+        elif d in df_lloguer.columns:   # Va por año este
+            st.subheader("Preu lloguer ultima decada:")
             df_temp_cities = []
             for city in cities:
-                data = {city:list(df_lloguer[d][city])}  
-                df_temp = pd.DataFrame(data, index =df_lloguer["any"][city])
-                df_temp_cities.append(df_temp.copy())
+                if city in df_lloguer.index:
+                    data = {city:list(df_lloguer[d][city])}  
+                    df_temp = pd.DataFrame(data, index = df_lloguer["any"][city])
+                    df_temp_cities.append(df_temp.copy())
             final_df = pd.concat(df_temp_cities, axis=1)
             st.line_chart(final_df)
         elif d in df_edat_sexe.columns:
+            st.subheader(d)
             st.bar_chart(df_edat_sexe[d][cities])
         elif d in df_demografia_habitatges.columns: #Comprobar celdas con nan
             if not isnan(df_demografia_habitatges[d][cities].values).all():
+                st.subheader(d)
                 st.bar_chart(df_demografia_habitatges[d][cities])
 
 st.title('Dades Tarragonès')
@@ -122,7 +130,20 @@ columns = [checkbox_column[k] for k, v in checklist.items() if v]
 if len(cities) > 0 and len(columns) > 0:
     plot_cities_data(cities, columns)
 elif len(cities) > 0:
-    print("Show tables with city info")
+    st.subheader('Dades Població')
+    st.write(df_poblacio.loc[cities])
+
+    st.subheader('Dades Demogràfiques')
+    st.write(df_demografia.loc[cities])
+
+    st.subheader('Preu lloguer última dècada')
+    st.write(df_lloguer.loc[cities])
+
+    st.subheader('Dades Edat-Genere')
+    st.write(df_edat_sexe.loc[cities])
+
+    st.subheader('Dades Demografia-Habitatges')
+    st.write(df_demografia_habitatges.loc[cities])
 elif len(columns) > 0:
     columnsPoblacio = [column for column in columns if column in df_poblacio.columns]
     if len(columnsPoblacio) > 0:
@@ -134,10 +155,9 @@ elif len(columns) > 0:
         st.subheader('Dades Demogràfiques')
         st.write(df_demografia[columnsDemografia])
 
-    columnsLloguer = [column for column in columns if column in df_lloguer.columns]
-    if len(columnsLloguer) > 0:
+    if checklist["preu_lloguer"]:
         st.subheader('Preu lloguer última dècada')
-        st.write(df_lloguer[columnsLloguer])
+        st.write(df_lloguer)
 
     columnsEdatSexe = [column for column in columns if column in df_edat_sexe.columns]
     if len(columnsEdatSexe) > 0:
