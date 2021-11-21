@@ -25,7 +25,7 @@ def load_data():
     df_demografia = pd.read_excel(xls, 'Demografia', index_col=0)
     df_lloguer = pd.read_excel(xls, 'Lloguer-Decada',  index_col=1)
     df_edat_sexe = pd.read_excel(xls, 'Poblacio-Edat-Sexe', index_col=2)
-    df_demografia_habitatges = pd.read_excel(xls, 'Demografia-Habitatges', index_col=0, header=0)#.fillna(0).astype(int64)   #CAMBIO AQUI DE NAN A 0
+    df_demografia_habitatges = pd.read_excel(xls, 'Demografia-Habitatges', index_col=0, header=0)
     with open("checkbox_column.json", "r", encoding ="utf8") as json_file:
         checkbox_column = json.load(json_file)
 
@@ -59,6 +59,8 @@ def plot_cities_data(cities, data):
             if not isnan(df_demografia_habitatges[d][cities].values).all():
                 st.subheader(d)
                 st.bar_chart(df_demografia_habitatges[d][cities])
+
+
 
 st.title('Dades Tarragonès')
 st.write("Dades dels municipis del Tarragonès, utilitza el menú lateral per generar gràfiques i comparar dades de diferents municipis.")
@@ -126,33 +128,35 @@ checklist["llars_pare_mare_fills"] = st.sidebar.checkbox("Llars per tipus de nuc
 checklist["hab_fam_prin_prop"] = st.sidebar.checkbox("Habitatges familiars principals de propietat")
 checklist["habitants_habitatge"] = st.sidebar.checkbox("Habitants per habitatge")
 
+#Esta en feo pero bueno 
+exemple_30perc = st.sidebar.checkbox("Exemple per 30%")
+
 columns = [checkbox_column[k] for k, v in checklist.items() if v]
 
 if len(cities) > 0 and len(columns) > 0:
     plot_cities_data(cities, columns)
 elif len(cities) > 0:
-    citiesPoblacio = [city for city in cities if city in df_poblacio.index]
-    if len(citiesPoblacio) > 0:
+    if exemple_30perc: #Para el ejemplo
+        st.subheader('Exemple 30 percent')
+        new_df = df_lloguer[df_lloguer['any'] == 2020]
+        data = {'Renda familiar disponible per habitant':list(df_poblacio['Renda familiar disponible per habitant'][cities].astype(int)),
+            'Mínims per accedir al mercat de lloguer':list(df_poblacio['Mínims per accedir al mercat de lloguer'][cities].astype(int)),
+            'Renda anual 2020':list(new_df['renda'][cities].astype(int)*12)}
+        df_temp = pd.DataFrame(data, index=cities)
+        st.write(df_temp)
+    else:
         st.subheader('Dades Població')
         st.write(df_poblacio.loc[cities])
 
-    citiesDemografia = [city for city in cities if city in df_demografia.index]
-    if len(citiesDemografia) > 0:
         st.subheader('Dades Demogràfiques')
         st.write(df_demografia.loc[cities])
 
-    citiesLloguer = [city for city in cities if city in df_lloguer.index]
-    if len(citiesLloguer) > 0:
         st.subheader('Preu lloguer última dècada')
         st.write(df_lloguer.loc[cities])
 
-    citiesEdatSexe = [city for city in cities if city in df_edat_sexe.index]
-    if len(citiesEdatSexe) > 0:
         st.subheader('Dades Edat-Genere')
         st.write(df_edat_sexe.loc[cities])
 
-    citiesDemografiaHabitatges = [city for city in cities if city in df_demografia_habitatges.index]
-    if len(citiesDemografiaHabitatges) > 0:
         st.subheader('Dades Demografia-Habitatges')
         st.write(df_demografia_habitatges.loc[cities])
 elif len(columns) > 0:
@@ -180,17 +184,26 @@ elif len(columns) > 0:
         st.subheader('Dades Demografia-Habitatges')
         st.write(df_demografia_habitatges[columnsDemografiaHabitatges])
 else:
-    st.subheader('Dades Població')
-    st.write(df_poblacio)
+    if exemple_30perc: #Para el ejemplo
+        st.subheader('Exemple 30 percent')
+        new_df = df_lloguer[df_lloguer['any'] == 2020]*12
+        data = {'Renda familiar disponible per habitant':list(df_poblacio['Renda familiar disponible per habitant'].fillna(0).astype(int)),
+            'Mínims per accedir al mercat de lloguer':list(df_poblacio['Mínims per accedir al mercat de lloguer'].fillna(0).astype(int))}
+        df_temp = pd.DataFrame(data, index=df_poblacio.index)
+        st.write(df_temp)
+        st.write(new_df['renda'])
+    else:
+        st.subheader('Dades Població')
+        st.write(df_poblacio)
 
-    st.subheader('Dades Demogràfiques')
-    st.write(df_demografia)
+        st.subheader('Dades Demogràfiques')
+        st.write(df_demografia)
 
-    st.subheader('Preu lloguer última dècada')
-    st.write(df_lloguer)
+        st.subheader('Preu lloguer última dècada')
+        st.write(df_lloguer)
 
-    st.subheader('Dades Edat-Genere')
-    st.write(df_edat_sexe)
+        st.subheader('Dades Edat-Genere')
+        st.write(df_edat_sexe)
 
-    st.subheader('Dades Demografia-Habitatges')
-    st.write(df_demografia_habitatges)
+        st.subheader('Dades Demografia-Habitatges')
+        st.write(df_demografia_habitatges)
