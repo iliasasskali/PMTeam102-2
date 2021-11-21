@@ -50,7 +50,7 @@ def plot_cities_data(cities, data):
                     df_temp = pd.DataFrame(data, index = df_lloguer["any"][city])
                     df_temp_cities.append(df_temp.copy())
             final_df = pd.concat(df_temp_cities, axis=1)
-            st.write(final_df)
+            final_df.index = final_df.index.map(str)
             st.line_chart(final_df)
         elif d in df_edat_sexe.columns:
             st.subheader(d)
