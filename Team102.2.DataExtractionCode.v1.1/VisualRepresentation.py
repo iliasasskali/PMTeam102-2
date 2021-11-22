@@ -144,21 +144,31 @@ elif len(cities) > 0:
             'Renda anual 2020':list(new_df['renda'][cities].astype(int)*12)}
         df_temp = pd.DataFrame(data, index=cities)
         st.write(df_temp)
-    else:
-        st.subheader('Dades Població')
-        st.write(df_poblacio.loc[cities])
+    else:    
+        citiesPoblacio = [city for city in cities if city in df_poblacio.index]
+        if len(citiesPoblacio) > 0:
+            st.subheader('Dades Població')
+            st.write(df_poblacio.loc[cities])
 
-        st.subheader('Dades Demogràfiques')
-        st.write(df_demografia.loc[cities])
+        citiesDemografia = [city for city in cities if city in df_demografia.index]
+        if len(citiesDemografia) > 0:
+            st.subheader('Dades Demogràfiques')
+            st.write(df_demografia.loc[cities])
+        
+        citiesLloguer = [city for city in cities if city in df_lloguer.index]
+        if len(citiesLloguer) > 0:
+            st.subheader('Preu lloguer última dècada')
+            st.write(df_lloguer.loc[cities])
 
-        st.subheader('Preu lloguer última dècada')
-        st.write(df_lloguer.loc[cities])
+        citiesEdatSexe = [city for city in cities if city in df_edat_sexe.index]
+        if len(citiesEdatSexe) > 0:
+            st.subheader('Dades Edat-Genere')
+            st.write(df_edat_sexe.loc[cities])
 
-        st.subheader('Dades Edat-Genere')
-        st.write(df_edat_sexe.loc[cities])
-
-        st.subheader('Dades Demografia-Habitatges')
-        st.write(df_demografia_habitatges.loc[cities])
+        citiesDemografiaHabitatges = [city for city in cities if city in df_demografia_habitatges.index]
+        if len(citiesDemografiaHabitatges) > 0:
+            st.subheader('Dades Demografia-Habitatges')
+            st.write(df_demografia_habitatges.loc[cities])
 elif len(columns) > 0:
     columnsPoblacio = [column for column in columns if column in df_poblacio.columns]
     if len(columnsPoblacio) > 0:
