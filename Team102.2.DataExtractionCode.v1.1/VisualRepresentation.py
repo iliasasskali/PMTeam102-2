@@ -128,13 +128,21 @@ checklist["llars_pare_mare_fills"] = st.sidebar.checkbox("Llars per tipus de nuc
 checklist["hab_fam_prin_prop"] = st.sidebar.checkbox("Habitatges familiars principals de propietat")
 checklist["habitants_habitatge"] = st.sidebar.checkbox("Habitants per habitatge")
 
-#Esta en feo pero bueno 
+#Esta en feo pero bueno
 exemple_30perc = st.sidebar.checkbox("Exemple per 30%")
 
 columns = [checkbox_column[k] for k, v in checklist.items() if v]
 
 if len(cities) > 0 and len(columns) > 0:
     plot_cities_data(cities, columns)
+    if exemple_30perc: #Para el ejemplo
+        st.subheader('Exemple 30 percent')
+        new_df = df_lloguer[df_lloguer['any'] == 2020]
+        data = {'Renda familiar disponible per habitant':list(df_poblacio['Renda familiar disponible per habitant'][cities].astype(int)),
+            'Mínims per accedir al mercat de lloguer':list(df_poblacio['Mínims per accedir al mercat de lloguer'][cities].astype(int)),
+            'Renda anual 2020':list(new_df['renda'][cities].astype(int)*12)}
+        df_temp = pd.DataFrame(data, index=cities)
+        st.write(df_temp)
 elif len(cities) > 0:
     if exemple_30perc: #Para el ejemplo
         st.subheader('Exemple 30 percent')
@@ -170,6 +178,14 @@ elif len(cities) > 0:
             st.subheader('Dades Demografia-Habitatges')
             st.write(df_demografia_habitatges.loc[cities])
 elif len(columns) > 0:
+    if exemple_30perc: #Para el ejemplo
+        st.subheader('Exemple 30 percent')
+        new_df = df_lloguer[df_lloguer['any'] == 2020]*12
+        data = {'Renda familiar disponible per habitant':list(df_poblacio['Renda familiar disponible per habitant'].fillna(0).astype(int)),
+            'Mínims per accedir al mercat de lloguer':list(df_poblacio['Mínims per accedir al mercat de lloguer'].fillna(0).astype(int))}
+        df_temp = pd.DataFrame(data, index=df_poblacio.index)
+        st.write(df_temp)
+        st.write(new_df['renda'])
     columnsPoblacio = [column for column in columns if column in df_poblacio.columns]
     if len(columnsPoblacio) > 0:
         st.subheader('Dades Població')
