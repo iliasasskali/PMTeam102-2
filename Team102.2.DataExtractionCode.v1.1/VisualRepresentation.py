@@ -66,6 +66,19 @@ st.title('Dades Tarragonès')
 st.write("Dades dels municipis del Tarragonès, utilitza el menú lateral per generar gràfiques i comparar dades de diferents municipis.")
 
 # Side Bar
+add_city = st.sidebar.text_input("Afegeix municipis a la base de dades inserint els codis de municipi separats per ,")
+cities_to_add = add_city.split(",")
+
+provinces = st.sidebar.multiselect(
+    "Filtrar per provincies:",
+    ['Barcelona', 'Girona', 'Tarragona', 'Lleida']
+)
+
+comarques = st.sidebar.multiselect(
+    "Filtrar per comarques:",
+    ['Tarragonès', 'Barcelonès', 'Gironès', 'Urgell']
+)
+
 cities = st.sidebar.multiselect(
     "Filtrar per municipi, selecciona multiples municipis per comparar-los:",
     df_poblacio.index
